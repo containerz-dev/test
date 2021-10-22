@@ -1,0 +1,13 @@
+steps:
+  - id: docker_version
+    name: docker:20.10
+    args:
+      - --debug
+      - version
+
+  - id: docker_system_info
+    name: docker:20.10
+    args:
+      - --debug
+      - system
+      - info
