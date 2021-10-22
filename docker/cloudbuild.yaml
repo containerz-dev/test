@@ -4,6 +4,8 @@ steps:
     args:
       - --debug
       - version
+    waitFor:
+      - "-"
 
   - id: docker_system_info
     name: docker:20.10
@@ -11,3 +13,14 @@ steps:
       - --debug
       - system
       - info
+    waitFor:
+      - "docker_version"
+
+  - name: docker:20.10
+    args:
+      - --debug
+      - image
+      - ls
+      - --all
+    waitFor:
+      - "docker_system_info"
