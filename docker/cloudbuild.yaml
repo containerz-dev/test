@@ -1,26 +1,33 @@
 steps:
   - id: docker_version
-    name: docker:20.10
+    name: docker:20.10-git
     args:
-      - --debug
       - version
-    waitFor:
-      - "-"
 
   - id: docker_system_info
-    name: docker:20.10
+    name: docker:20.10-git
     args:
-      - --debug
       - system
       - info
-    waitFor:
-      - "docker_version"
 
-  - name: docker:20.10
+  - id: ls_cloudbuild
+    name: docker:20.10-git
+    entrypoint: "sh"
     args:
-      - --debug
-      - image
-      - ls
-      - --all
-    waitFor:
-      - "docker_system_info"
+      - -c
+      - |
+        ls -la ~/.docker
+
+  - id: docker_build_help
+    name: docker:20.10-git
+    args:
+      - build
+      - --help
+
+  - id: docker_buildx_help
+    name: docker:20.10-git
+    args:
+      - build
+      - --help
+    env:
+      - "DOCKER_BUILDKIT=1"
