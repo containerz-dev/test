@@ -1,33 +1,78 @@
 steps:
-  - id: docker_version
-    name: docker:20.10-git
-    args:
-      - version
-
-  - id: docker_system_info
-    name: docker:20.10-git
-    args:
-      - system
-      - info
-
-  - id: ls_cloudbuild
-    name: docker:20.10-git
+  - id: cloudbuild_debug
+    name: docker:20.10
     entrypoint: "sh"
     args:
       - -c
       - |
-        ls -la ~/.docker
-
-  - id: docker_build_help
-    name: docker:20.10-git
-    args:
-      - build
-      - --help
-
-  - id: docker_buildx_help
-    name: docker:20.10-git
-    args:
-      - build
-      - --help
+        docker network inspect ls
+        docker network inspect host
+        docker network inspect cloudbuild
+        docker container ls --all
+        docker image ls --all
     env:
       - "DOCKER_BUILDKIT=1"
+    waitFor: ["-"]
+
+#   - id: docker_buildx
+#     name: docker:20.10
+#     args:
+#       - build
+#       - --target=docker
+#       - --build-arg=DOCKER_VERSION=${_DOCKER_VERSION}
+#       - --build-arg=BUILDX_DIGEST=${_BUILDX_DIGEST}
+#       - --tag=docker-buildx:cloudbuild
+#       - --file=docker/buildx/Dockerfile
+#       - docker/buildx
+#     env:
+#       - "DOCKER_BUILDKIT=1"
+#     waitFor:
+#       - "cloudbuild_debug"
+# 
+#   - id: docker_version
+#     name: docker-buildx:cloudbuild
+#     args:
+#       - version
+#     waitFor:
+#       - "docker_buildx" 
+# 
+#   - id: docker_system_info
+#     name: docker-buildx:cloudbuild
+#     args:
+#       - system
+#       - info
+#     waitFor:
+#       - "docker_buildx" 
+# 
+#   - id: ls_cloudbuild
+#     name: docker-buildx:cloudbuild
+#     entrypoint: "sh"
+#     args:
+#       - -c
+#       - |
+#         ls -la ~/.docker
+#     waitFor:
+#       - "docker_buildx" 
+# 
+#   - id: docker_build_help
+#     name: docker-buildx:cloudbuild
+#     args:
+#       - build
+#       - --help
+#     waitFor:
+#       - "docker_buildx" 
+# 
+#   - id: docker_buildx_help
+#     name: docker-buildx:cloudbuild
+#     args:
+#       - buildx
+#       - build
+#       - --help
+#     env:
+#       - "DOCKER_BUILDKIT=1"
+#     waitFor:
+#       - "docker_buildx" 
+
+substitutions:
+  _DOCKER_VERSION: "20.10"
+  _BUILDX_DIGEST: "2ec838c5f74e1cdd5e6ea4e789c0c0f5573807550b50b2ddc6deb2c2033a286b"  # https://github.com/docker/buildx/tree/084b6c0a95ce, https://github.com/docker/buildx/runs/3947339794
